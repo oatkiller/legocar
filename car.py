@@ -1,3 +1,10 @@
+# See http://www.brianhensley.net/2012/08/wii-controller-raspberry-pi-python.html
+# See https://www.youtube.com/watch?v=hfBXRgUKqtc
+# See http://www.philohome.com/motors/motorcomp.htm
+# See http://sourceforge.net/p/raspberry-gpio-python/wiki/PWM/
+# See http://www.robotplatform.com/howto/L293/motor_driver_1.html
+# See http://www.ti.com/lit/ds/symlink/l293d.pdf
+
 #!/usr/bin/env python
 
 import cwiid
@@ -65,6 +72,7 @@ class WiiRC(object):
     DOWN = 256
     HOME = 128
     #POWER = 64 or 32 maybe?
+    MINUS = 16
     B = 4
     # SERIOUSLY LOL
     ONE = 2
