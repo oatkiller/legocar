@@ -24,18 +24,26 @@ class Motor(object):
         (100,0)
     ]
     FREQUENCY = 1170
-    def __init__(firstPinNumber,secondPinNumber):
-        GPIO.setup([self.firstPinNumber,self.secondPinNumber],GPIO.OUT)
+    GPIOSetup = False
+    def __init__(self,firstPinNumber,secondPinNumber):
+        GPIO.setmode(GPIO.BOARD)
 
-        self.firstPin = GPIO.PWM(firstPinNumber,self.FREQUENCY)
-        self.secondPin = GPIO.PWM(secondPinNumber,self.FREQUENCY)
+    def setupGPIO(self):
+        if self.GPIOSetup == False:
+            GPIO.setup([firstPinNumber,secondPinNumber],GPIO.OUT)
 
-        self.firstPin.start(self.STOP[0])
-        self.secondPin.start(self.STOP[1])
+            self.firstPin = GPIO.PWM(firstPinNumber,self.FREQUENCY)
+            self.secondPin = GPIO.PWM(secondPinNumber,self.FREQUENCY)
 
-        self.currentSpeedIndex = 8
+            self.firstPin.start(self.STOP[0])
+            self.secondPin.start(self.STOP[1])
+
+            self.currentSpeedIndex = 8
+
+            self.GPIOSetup = True
 
     def setSpeed(self,speedTuple):
+        self.setupGPIO()
         self.firstPin.ChangeDutyCycle(speedTuple[0])
         self.secondPin.ChangeDutyCycle(speedTuple[1])
 
@@ -65,8 +73,15 @@ class WiiRC(object):
     def __init__(self,leftMotor,rightMotor):
         self.leftMotor = leftMotor
         self.rightMotor = rightMotor
-        self.wm = cwiid.Wiimote()
+
+    def connect(self):
+        print 'Press button 1 + 2 on your Wii Remote...'
+        time.sleep(1)
+        self.wm=cwiid.Wiimote()
+	print 'Wii Remote connected...'
+	print '\nPress the ONE button to disconnect the Wii and end the application'
         self.wm.rpt_mode = cwiid.RPT_BTN
+        self.processInput()
 
     def processInput(self):
         while True:
@@ -91,7 +106,10 @@ def main():
     leftMotor = Motor(7,11)
     rightMotor = Motor(12,15)
     wiirc = WiiRC(leftMotor,rightMotor)
-    #wiirc.processInput()
+    wiirc.connect()
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    finally:
+        GPIO.cleanup()
