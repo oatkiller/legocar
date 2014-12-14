@@ -80,6 +80,7 @@ class WiiRC(object):
                 self.rightMotor.slower()
             if self.buttonPressed(self.ONE):
                 print "closing Bluetooth connection. Good Bye!"
+                GPIO.cleanup()
                 exit(self.wm)
             time.sleep(.5)
 
