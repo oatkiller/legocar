@@ -33,19 +33,20 @@ class Motor(object):
     FREQUENCY = 1170
     GPIOSetup = False
     def __init__(self,firstPinNumber,secondPinNumber):
+        self.firstPinNumber = firstPinNumber
+        self.secondPinNumber = secondPinNumber
+        self.currentSpeedIndex = 8
         GPIO.setmode(GPIO.BOARD)
 
     def setupGPIO(self):
         if self.GPIOSetup == False:
-            GPIO.setup([firstPinNumber,secondPinNumber],GPIO.OUT)
+            GPIO.setup([self.firstPinNumber,self.secondPinNumber],GPIO.OUT)
 
-            self.firstPin = GPIO.PWM(firstPinNumber,self.FREQUENCY)
-            self.secondPin = GPIO.PWM(secondPinNumber,self.FREQUENCY)
+            self.firstPin = GPIO.PWM(self.firstPinNumber,self.FREQUENCY)
+            self.secondPin = GPIO.PWM(self.secondPinNumber,self.FREQUENCY)
 
             self.firstPin.start(self.STOP[0])
             self.secondPin.start(self.STOP[1])
-
-            self.currentSpeedIndex = 8
 
             self.GPIOSetup = True
 
@@ -66,13 +67,14 @@ class Motor(object):
 
 class WiiRC(object):
     PLUS = 4096
-    LEFT = 2048
-    RIGHT = 1024
-    UP = 512
+    LEFT = 256
+    RIGHT = 512
+    UP = 1024
     DOWN = 256
     HOME = 128
     #POWER = 64 or 32 maybe?
     MINUS = 16
+    A = 8
     B = 4
     # SERIOUSLY LOL
     ONE = 2
@@ -93,9 +95,9 @@ class WiiRC(object):
 
     def processInput(self):
         while True:
-            if self.buttonPressed(self.UP):
+            if self.buttonPressed(self.RIGHT):
                 self.leftMotor.faster()
-            if self.buttonPressed(self.DOWN):
+            if self.buttonPressed(self.LEFT):
                 self.leftMotor.slower()
             if self.buttonPressed(self.PLUS):
                 self.rightMotor.faster()
@@ -105,10 +107,10 @@ class WiiRC(object):
                 print "closing Bluetooth connection. Good Bye!"
                 GPIO.cleanup()
                 exit(self.wm)
-            time.sleep(.5)
+            time.sleep(.1)
 
     def buttonPressed(self,BUTTON):
-        return self.wm.state['buttons'] == BUTTON
+        return BUTTON & self.wm.state['buttons'] == BUTTON
 
 def main():
     leftMotor = Motor(7,11)
